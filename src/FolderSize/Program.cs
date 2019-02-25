@@ -28,8 +28,6 @@ namespace FolderSize
             {
                 Console.WriteLine(error.ToString());
             }
-
-            Console.ReadLine();
         }
 
         private static void RunOptionsAndReturnExitCode(CommandLineOptions opts)
@@ -46,8 +44,6 @@ namespace FolderSize
             {
                 Console.WriteLine(e);
             }
-
-            Console.ReadLine();
         }
 
         private static void PrintDirectoryData(int maxRecursionLevel, DirectoryData directoryData)
@@ -63,7 +59,9 @@ namespace FolderSize
                     output += "|__";
                 }
 
-                output += directoryData.Name + " : " + Math.Round(directoryData.SizeBytes / (double) (1024 * 1024), 2) + " MB";
+                double directorySizeMb = Math.Round(directoryData.SizeBytes / (double) (1024 * 1024), 2);
+
+                output += $"{directoryData.Name} : { directorySizeMb } MB";
 
                 Console.WriteLine(output);
 
@@ -84,9 +82,9 @@ namespace FolderSize
 
             FileInfo[] fileInfos = directoryInfo.GetFiles();
 
-            foreach (FileInfo fi in fileInfos)
+            foreach (FileInfo fileInfo in fileInfos)
             {
-                directorySizeBytes += fi.Length;
+                directorySizeBytes += fileInfo.Length;
             }
 
             directoryData.Name = directoryInfo.Name;
