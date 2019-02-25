@@ -2,8 +2,6 @@
 
 App Software Folder size is a command line utility written in .NET Core for reporting on folder / directory size from a given root path and reporting to a given depth.
 
-To hire me, email mail@appsoftware.com
-
 ## Options:
 
 ### Help 
@@ -35,3 +33,7 @@ Example: asc, Required: No, Default: none
 To build for Windows platforms, run the file Build-win-x64 or run the following in the project directory. 
 
 	dotnet publish -r win-x64 -c release
+
+## Hire Me
+
+mail@appsoftware.com
