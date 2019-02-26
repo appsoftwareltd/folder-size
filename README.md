@@ -22,7 +22,7 @@ Note: The directory structure is fully recursed for file and folder size reporti
 
 Example: 4, Required: No, Default: 2
 
-## Set the sort direction (by size)
+### Set the sort direction (by size)
 
 Values that can be passed are `asc` (Ascending), `desc` (Descending) or `none` (No sort)
 
