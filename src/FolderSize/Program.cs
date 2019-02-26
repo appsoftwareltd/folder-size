@@ -9,10 +9,14 @@ namespace FolderSize
     {
         private static int _recursionLevel;
 
+        private static int _directoriesProcessed = 0;
+
         private static DirectoryData _directoryData;
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Working. Directories processed: ");
+
             // Using commandline parser to 
             // https://github.com/commandlineparser/commandline
 
@@ -20,6 +24,10 @@ namespace FolderSize
                   .ParseArguments<CommandLineOptions>(args)
                   .WithParsed(RunOptionsAndReturnExitCode)
                   .WithNotParsed(HandleParseError);
+
+#if DEBUG
+            Console.ReadLine();
+#endif
         }
 
         private static void HandleParseError(IEnumerable<Error> errs)
@@ -38,7 +46,11 @@ namespace FolderSize
 
                 DirectorySize(opts.SortDirection, new DirectoryInfo(opts.DirectoryPath), _directoryData);
 
+                Console.WriteLine(Environment.NewLine);
+
                 PrintDirectoryData(opts.RecursionLevel, _directoryData);
+
+                PrintProgress();
             }
             catch (Exception e)
             {
@@ -78,35 +90,60 @@ namespace FolderSize
         {
             long directorySizeBytes = 0;
 
-            // Add file sizes for current directory
-
-            FileInfo[] fileInfos = directoryInfo.GetFiles();
-
-            foreach (FileInfo fileInfo in fileInfos)
-            {
-                directorySizeBytes += fileInfo.Length;
-            }
-
             directoryData.Name = directoryInfo.Name;
 
-            directoryData.SizeBytes += directorySizeBytes;
-
-            // Recursively add subdirectory sizes
-
-            DirectoryInfo[] subDirectories = directoryInfo.GetDirectories();
-
-            foreach (DirectoryInfo di in subDirectories)
+            try
             {
-                var subDirectoryData = new DirectoryData(sortDirection);
+                // Add file sizes for current directory
 
-                directoryData.DirectoryDatas.Add(subDirectoryData);
+                FileInfo[] fileInfos = directoryInfo.GetFiles();
 
-                directorySizeBytes += DirectorySize(sortDirection, di, subDirectoryData);
+                foreach (FileInfo fileInfo in fileInfos)
+                {
+                    directorySizeBytes += fileInfo.Length;
+                }
+
+                directoryData.SizeBytes += directorySizeBytes;
+
+                // Recursively add subdirectory sizes
+
+                DirectoryInfo[] subDirectories = directoryInfo.GetDirectories();
+
+                foreach (DirectoryInfo di in subDirectories)
+                {
+                    var subDirectoryData = new DirectoryData(sortDirection);
+
+                    directoryData.DirectoryDatas.Add(subDirectoryData);
+
+                    directorySizeBytes += DirectorySize(sortDirection, di, subDirectoryData);
+                }
+
+                directoryData.SizeBytes = directorySizeBytes;
+            }
+            catch (UnauthorizedAccessException uaex)
+            {
+                directoryData.Name += " (Unable to calculate size - Unauthorised)";
+            }
+            catch (Exception ex)
+            {
+                directoryData.Name += " (Unable to calculate size - Error)";
             }
 
-            directoryData.SizeBytes = directorySizeBytes;
+            _directoriesProcessed++;
+
+            if (_directoriesProcessed % 10 == 0)
+            {
+                PrintProgress();
+            }
 
             return directorySizeBytes;
+        }
+
+        private static void PrintProgress()
+        {
+            Console.SetCursorPosition(32, 0);
+
+            Console.Write(_directoriesProcessed);
         }
     }
 }

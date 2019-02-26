@@ -2,7 +2,7 @@
   "profiles": {
     "FolderSize.Console": {
       "commandName": "Project",
-      "commandLineArgs": "-d \"C:\\Users\\garet\\source\\repos\""
+      "commandLineArgs": "-d \"C:\\\\\""
     }
   }
 }
